@@ -1,0 +1,2 @@
+# 指令信息有效期
+REDIS_MESSAGE_CODE_EXPIRES = 60
