@@ -6,7 +6,6 @@ from vending_machine.utils.my_model import BaseModel
 
 
 class User(AbstractUser):
-    mobile = models.CharField(verbose_name='手机号', max_length=11, unique=True)
     email_avtive = models.BooleanField(verbose_name='激活邮箱', default=False)
 
     class Meta:

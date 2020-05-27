@@ -21,7 +21,7 @@ class RedisServer(object):
         try:
             # 创建StrictRedis对象，与redis服务器建⽴连接
             sr = StrictRedis(host=database_host, port=6379, db='1')
-            ip_keys = ip_key[0] + ":" + str(ip_key[1])
+            ip_keys = ip_key[0]
             sr.set(ip_keys, 1)
             return True
         except Exception as e:
@@ -36,7 +36,7 @@ class RedisServer(object):
         last_str = None
         while True:
             try:
-                resutl = sr.get(ip_key[0] + ":" + str(ip_key[1])).decode()  # 待改进 如果两个内容相同则不会发送给客户端
+                resutl = sr.get(ip_key[0]).decode()  # 待改进 如果两个内容相同则不会发送给客户端
                 if resutl == last_str:
                     time.sleep(3)
                 else:
@@ -59,7 +59,7 @@ class MysqlServer(object):
         # 安全的方式
         # 构造参数列表
         # 执行select语句，并返回受影响的行数：查询所有数据
-        count = cs1.execute("insert into tb_facility values(DEFAULT,%s,%s);",
+        cs1.execute("insert into tb_facility values(DEFAULT,%s,%s);",
                             [ip, text])
         # 注意：
         # 如果要是有多个参数，需要进行参数化
@@ -132,7 +132,7 @@ def handle_client_request(service_client_socket, ip_port):
 
         else:
             sr = StrictRedis(host=database_host, port=6379, db=1)
-            ip_keys = ip_port[0] + ":" + str(ip_port[1])
+            ip_keys = ip_port[0]
             sr.delete(ip_keys)
             print("客户端下线了:", ip_port)
             break
