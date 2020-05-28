@@ -1,5 +1,7 @@
-import socket
-
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.sendto('111'.encode(), ('127.0.0.1', 63154))
-sock.close()
+import jwt
+# _payload = {'exp': 3600*2*24}
+# _payload.update({"das":"22"})
+token = jwt.encode({"das":"22"}, "dasd", algorithm='HS256', )
+print(token)
+payload = jwt.decode(token, "dasd", algorithm=['HS256'])
+print(payload)

@@ -28,22 +28,28 @@ $(function () {
                 xhrFields: {
                     withCredentials: true
                 },
-                headers: {
-                    "X-CSRFToken": getCookie("csrf_token")
-                },
                 data: JSON.stringify(param),
                 success: function (resp) {
-                    if (resp.code == "ok") {
-                        // 跳转到首页
+                    if (resp.code =='ok') {
+                        window.sessionStorage.clear();
+                        window.localStorage.clear();
+                        window.localStorage.setItem('jwt_token',resp.jwt_token);
                         $(location).prop('href', '/index.html')
-                        // location.href = "/index.html"
-                    }
-                    else {
+                    }else{
                         alert(resp.errmsg)
                     }
-                },
+
+                },else(){
+                    alert('登录超时')
+                }
 
             })
         }
     });
 });
+
+
+$(document).ready(function () {
+    window.sessionStorage.clear();
+    window.localStorage.clear();
+})

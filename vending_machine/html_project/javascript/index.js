@@ -6,21 +6,27 @@ $(document).ready(function () {
     
     var str1 = '';
     var str2 = '';
+    var jwt = localStorage.getItem('jwt_token');
     // 检查用户的登录状态
     $.ajax({
         url: host + '/api/v1.0/check/',
-        type: "get",
+        type: "post",
+        contentType: "application/json",
+        data: jwt,
         // xhrFields: {withCredentials: true},
         success: function (resp) {
             if (resp.code == "ok"){
-                $(".user-name").html(resp.username)
+                str1 = '<em>' +resp.username+ '</em>';
+                $("#username").html(str1);
 
                 }else {
                     // 没有登录
-                    alert('请先登录')
+                    alert(resp.errmsg)
                     location.href = "/login.html"
 
                 }
+            },else(){
+                alert('连接超时')
             }
         
         })
@@ -81,5 +87,6 @@ $(document).on('click', "#my", function () {
         }
     });
 })
+
 
 

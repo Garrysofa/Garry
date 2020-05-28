@@ -1,12 +1,14 @@
 import re
 from django import http
 from django.contrib.auth import authenticate, login
+from django.http import HttpResponse
 from django.views import View
 import json
 from django_redis import get_redis_connection
 from users.models import Facility, User
 from vending_machine.utils import constants
 from vending_machine.utils.constants import REDIS_MESSAGE_CODE_EXPIRES
+from vending_machine.utils.jwt_authenticate import generate_jwt, verify_jwt
 
 
 class LoginView(View):
@@ -22,25 +24,28 @@ class LoginView(View):
             return http.JsonResponse({'code': 'no', 'errmsg': '用户名格式有误'})
         if not re.match(r'^[a-zA-Z0-9_-]{5,20}', pwd):
             return http.JsonResponse({'code': 'no', 'errmsg': '密码错误'})
-        user = authenticate(username=username, password=pwd)  # 这句代处理
+        user = authenticate(request, username=username, password=pwd)
         if not user:
             return http.JsonResponse({"code": 'no', "errmsg": "用户名或密码错误"})
 
-        login(request, user)  # 就是将用户的信息存储在redis-session
-        request.session.set_expiry(3600 * 24 * 2)  # 保持登录两天
-        # request.csrf_cookie_needs_reset('username', user.username, max_age=3600 * 24 * 2)
-
-        return http.JsonResponse({'code': 'ok'})
+        payload = {"user_id": user.id, "username": user.username}
+        jwt_token = generate_jwt(payload)
+        return http.JsonResponse({"code": 'ok', "jwt_token": jwt_token})
 
 
 class CheckView(View):
-    def get(self, request):
-        user = request.user
-        if user.is_authenticated:
-            user_obj = User.objects.get(id=user.id)
-            return http.JsonResponse({'code': 'ok', 'username': user_obj.username})
-        else:
-            return http.JsonResponse({'code': 'no'})
+    def post(self, request):
+        # 验证jwt登录
+        try:
+            jwt_token = request.body.decode()
+            payload = verify_jwt(jwt_token)
+            if payload:
+                user_obj = User.objects.get(id=payload['user_id'])
+                return http.JsonResponse({'code': 'ok', 'username': user_obj.username})
+            else:
+                return http.JsonResponse({'code': 'no', 'errmsg': '请先登录'})
+        except:
+            return http.JsonResponse({'code': 'no', 'errmsg': '用户验证过期，请重新登录'})
 
 
 class DeviceView(View):

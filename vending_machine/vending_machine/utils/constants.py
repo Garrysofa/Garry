@@ -1,2 +1,4 @@
 # 指令信息有效期
 REDIS_MESSAGE_CODE_EXPIRES = 60
+# 用户登录cookie保持时长
+USER_LOGIN_COOKIE_EXPIRES = 2  # 两天

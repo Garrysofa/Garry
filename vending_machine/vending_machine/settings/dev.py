@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/1.11/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
-
+import datetime
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -126,7 +126,7 @@ DATABASES = {
 CACHES = {
     "send_message": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://192.168.19.129:6379/0",
+        "LOCATION": "redis://192.168.19.129:6379/3",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -145,13 +145,13 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
-    "session": {  # session
+    'session': {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://192.168.19.129:6379/3",
+        "LOCATION": "redis://192.168.19.129:6379/0",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
-    }
+    },
 }
 # 设置登录sessions保存库
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -193,4 +193,3 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
